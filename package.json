@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build && echo 'internationalgpacalculator.com' > dist/CNAME",
     "preview": "vite preview",
-    "test": "vitest"
+    "test": "vitest run"
   },
   "dependencies": {
     "@fontsource/inter-tight": "^5.2.7",
