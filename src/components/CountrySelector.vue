@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue'
-import { Check, ChevronsUpDown } from 'lucide-vue-next'
+import { Check, ChevronsUpDown, Search } from 'lucide-vue-next'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
@@ -41,10 +41,11 @@ function handleSelect(scaleId) {
         variant="outline"
         role="combobox"
         :aria-expanded="open"
-        class="w-full justify-between font-normal text-muted-foreground"
-        :class="{ 'text-foreground font-medium': store.selectedCountry }"
+        class="w-full justify-between active:scale-100 min-h-[44px] h-auto text-left"
       >
-        <span class="truncate">{{ selectedName }}</span>
+        <span class="truncate block w-full">
+          {{ selectedName }}
+        </span>
         <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
       </Button>
     </PopoverTrigger>
@@ -57,7 +58,7 @@ function handleSelect(scaleId) {
             <CommandItem
               v-for="scale in gradingScalesList"
               :key="scale.id"
-              :value="scale.name"
+              :value="scale.name + ' ' + scale.id"
               @select="handleSelect(scale.id)"
             >
               {{ scale.name }}
