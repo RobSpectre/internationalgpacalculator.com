@@ -1,69 +1,95 @@
-export const gradingScales = {
-    US: {
-        name: "USA (4.0 Scale)",
-        type: "range",
-        max: 4.0,
-        ranges: [
-            { min: 4.0, gpa: 4.0, label: "A" },
-            { min: 3.7, gpa: 3.7, label: "A-" },
-            { min: 3.3, gpa: 3.3, label: "B+" },
-            { min: 3.0, gpa: 3.0, label: "B" },
-            { min: 2.7, gpa: 2.7, label: "B-" },
-            { min: 2.3, gpa: 2.3, label: "C+" },
-            { min: 2.0, gpa: 2.0, label: "C" },
-            { min: 1.7, gpa: 1.7, label: "C-" },
-            { min: 1.3, gpa: 1.3, label: "D+" },
-            { min: 1.0, gpa: 1.0, label: "D" },
-            { min: 0.0, gpa: 0.0, label: "F" },
-        ],
-    },
-    UK: {
-        name: "United Kingdom (Percentage)",
-        type: "range",
-        max: 100,
-        ranges: [
-            { min: 70, gpa: 4.0, label: "First Class" },
-            { min: 65, gpa: 3.7, label: "Upper Second (2:1)" },
-            { min: 60, gpa: 3.3, label: "Upper Second (2:1)" },
-            { min: 55, gpa: 3.0, label: "Lower Second (2:2)" },
-            { min: 50, gpa: 2.7, label: "Lower Second (2:2)" },
-            { min: 45, gpa: 2.3, label: "Third Class" },
-            { min: 40, gpa: 2.0, label: "Third Class" },
-            { min: 35, gpa: 1.0, label: "Pass" }, // Approx
-            { min: 0, gpa: 0.0, label: "Fail" },
-        ],
-    },
-    India_10: {
-        name: "India (10-point Scale)",
-        type: "linear",
-        max: 10,
-        formula: (grade) => (grade / 10) * 4,
-    },
-    Percentage: {
-        name: "Percentage (0-100)",
-        type: "linear",
-        max: 100,
-        formula: (grade) => (grade / 100) * 4,
-    },
+import gradingData from '@/data/grading_scales.json';
+
+// Default US Scale (Manual Entry)
+const usScale = {
+    id: 'US',
+    name: "USA (4.0 Scale)",
+    country: "USA",
+    type: "range",
+    intlScale: ["4.0", "3.7", "3.3", "3.0", "2.7", "2.3", "2.0", "1.7", "1.3", "1.0", "0.0"],
+    usScale: ["4.0", "3.7", "3.3", "3.0", "2.7", "2.3", "2.0", "1.7", "1.3", "1.0", "0.0"]
 };
+
+// Process JSON data into an object keyed by ID
+const processedScales = {
+    US: usScale
+};
+
+gradingData.forEach(item => {
+    // Construct a name for display
+    let name = item.country;
+    if (item.schoolName && !item.schoolName.startsWith("DEFAULT")) {
+        name = `${item.country} - ${item.schoolName}`;
+    } else if (item.schoolName && item.schoolName.startsWith("DEFAULT")) {
+        // e.g., "DEFAULT Argentina" -> "Argentina (Default)"
+        name = item.schoolName.replace("DEFAULT ", "") + " (Default)";
+    }
+
+    processedScales[item.id] = {
+        ...item,
+        name: name,
+        // Pre-parse scales for interpolation if numeric
+        parsedIntl: item.intlScale.map(v => {
+            const f = parseFloat(v);
+            return isNaN(f) ? v : f;
+        }),
+        parsedUs: item.usScale.map(v => parseFloat(v))
+    };
+});
+
+export const gradingScales = processedScales;
 
 export const calculateCourseGPA = (grade, scaleKey) => {
     const scale = gradingScales[scaleKey];
-    if (!scale) return 0;
+    if (!scale || !grade) return 0;
 
-    let gpa = 0;
-    const numGrade = parseFloat(grade);
-
-    if (isNaN(numGrade)) return 0;
-
-    if (scale.type === "range") {
-        // Find the range that the grade falls into
-        // Assumes ranges are sorted desc by min
-        const match = scale.ranges.find((r) => numGrade >= r.min);
-        gpa = match ? match.gpa : 0;
-    } else if (scale.type === "linear") {
-        gpa = scale.formula(numGrade);
+    // If US scale, just return grade if numeric, or map letters
+    if (scaleKey === 'US') {
+        const g = parseFloat(grade);
+        if (!isNaN(g)) return g;
+        // Basic Letter mapping
+        const letter = grade.toUpperCase().trim();
+        const map = { 'A': 4.0, 'A-': 3.7, 'B+': 3.3, 'B': 3.0, 'B-': 2.7, 'C+': 2.3, 'C': 2.0, 'D': 1.0, 'F': 0 };
+        return map[letter] || 0;
     }
 
-    return Math.min(4.0, Math.max(0, gpa)); // Clamp between 0 and 4.0
+    // Generic Logic
+    const input = parseFloat(grade);
+    const isInputNumeric = !isNaN(input);
+    const cleanInput = grade.toString().trim().toUpperCase();
+
+    // Try to find match
+    for (let i = 0; i < scale.intlScale.length; i++) {
+        const rawIntl = scale.intlScale[i];
+        const parsedIntl = scale.parsedIntl[i];
+        const usVal = scale.parsedUs[i] || 0; // Default to 0 if missing
+
+        if (isInputNumeric && typeof parsedIntl === 'number') {
+            // Numeric comparison (assuming descending order in data?)
+            // Check if data is descending. Australia: 100, 80, 70... Yes.
+            // If input >= threshold, return usVal
+            if (input >= parsedIntl) {
+                return usVal;
+            }
+        } else {
+            // String comparison
+            // Check for exact match or range match (if rawIntl looks like "80-100")
+            // But our parser split by slash, so rawIntl is "100", "80".
+            // If the input is "A", match "A".
+            if (cleanInput === rawIntl.toUpperCase()) {
+                return usVal;
+            }
+        }
+    }
+
+    // Fallback: if numeric and we didn't match any threshold (e.g. grade < lowest), return 0?
+    // Or check if it's ascending? (Rare for GPA scales, usually top-down).
+
+    return 0;
 };
+
+// Export a sorted list for the UI selector
+export const gradingScalesList = Object.values(gradingScales).sort((a, b) => {
+    return a.name.localeCompare(b.name);
+});
+

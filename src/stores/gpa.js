@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia'
-import { calculateCourseGPA } from '@/utils/scales'
+import { calculateCourseGPA, gradingScales } from '@/utils/scales'
 
 export const useGPAStore = defineStore('gpa', {
     state: () => ({
-        selectedCountry: 'US', // Default to US 4.0 scale
+        selectedCountry: null, // No default selection
         courses: [
             { id: 1, name: 'Course 1', credits: 3, grade: '' },
             { id: 2, name: 'Course 2', credits: 3, grade: '' },
@@ -33,12 +33,17 @@ export const useGPAStore = defineStore('gpa', {
 
             if (totalCredits === 0) return 0;
             return (totalPoints / totalCredits).toFixed(2);
-        }
+        },
+        currentScale: (state) => gradingScales[state.selectedCountry] // Added currentScale getter
     },
     actions: {
         addCourse() {
-            const id = this.courses.length > 0 ? Math.max(...this.courses.map(c => c.id)) + 1 : 1;
-            this.courses.push({ id, name: `Course ${id}`, credits: 3, grade: '' });
+            this.courses.push({
+                id: crypto.randomUUID(), // Changed ID generation
+                name: '', // Changed default name
+                credits: 3,
+                grade: ''
+            })
         },
         removeCourse(id) {
             this.courses = this.courses.filter(c => c.id !== id);
@@ -49,8 +54,8 @@ export const useGPAStore = defineStore('gpa', {
                 course[field] = value;
             }
         },
-        setCountry(countryKey) {
-            this.selectedCountry = countryKey;
+        setCountry(country) {
+            this.selectedCountry = country
         }
-    },
+    }
 })
