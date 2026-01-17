@@ -37,6 +37,23 @@ const calculatedGPA = computed(() => {
           <CountrySelector />
         </div>
 
+        <div v-if="store.currentScale && store.selectedCountry" class="space-y-6 animate-in slide-in-from-bottom-2 duration-500 fade-in">
+            <div class="space-y-2">
+              <Label class="text-xs font-semibold text-muted-foreground uppercase">Conversion Chart</Label>
+              <div class="rounded-lg border bg-card p-4 shadow-sm">
+                  <ConversionGraph />
+              </div>
+            </div>
+
+             <Alert v-if="store.currentScale.notes" class="bg-blue-50/50 dark:bg-blue-900/10 border-blue-200/50 dark:border-blue-800/50 pr-10 [&>svg~*]:pl-0">
+                <Info class="h-4 w-4 text-blue-600 dark:text-blue-400 absolute right-4 !top-3 !left-auto" />
+                <AlertTitle class="text-blue-800 dark:text-blue-300">Conversion Notes</AlertTitle>
+                <AlertDescription class="text-blue-700/80 dark:text-blue-400/80 text-xs mt-1">
+                  {{ store.currentScale.notes }}
+                </AlertDescription>
+             </Alert>
+        </div>
+
         <div class="grid gap-2">
           <Label class="text-sm font-medium">Your Grade / Score</Label>
           <Input 
@@ -53,22 +70,7 @@ const calculatedGPA = computed(() => {
           </div>
         </div>
 
-        <div v-if="store.currentScale && store.selectedCountry" class="space-y-6 animate-in slide-in-from-bottom-2 duration-500 fade-in">
-             <Alert v-if="store.currentScale.notes" class="bg-blue-50/50 dark:bg-blue-900/10 border-blue-200/50 dark:border-blue-800/50">
-                <Info class="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                <AlertTitle class="text-blue-800 dark:text-blue-300">Conversion Notes</AlertTitle>
-                <AlertDescription class="text-blue-700/80 dark:text-blue-400/80 text-xs mt-1">
-                  {{ store.currentScale.notes }}
-                </AlertDescription>
-             </Alert>
-            
-            <div class="space-y-2">
-              <Label class="text-xs font-semibold text-muted-foreground uppercase">Conversion Chart</Label>
-              <div class="rounded-lg border bg-card p-4 shadow-sm">
-                  <ConversionGraph />
-              </div>
-            </div>
-        </div>
+
       </CardContent>
       
       <CardFooter class="justify-center text-xs text-muted-foreground">
