@@ -36,57 +36,85 @@ const isXNumeric = computed(() => {
     return scaleData.value.every(d => d.isNumeric)
 })
 
+const xTickValues = computed(() => {
+    if (!isXNumeric.value) return undefined // Let Unovis handle categorical
+    const numericData = scaleData.value.map(d => d.x)
+    if (numericData.length === 0) return []
+    
+    const min = Math.min(...numericData)
+    const max = Math.max(...numericData)
+    const range = max - min
+    
+    // Target 5-9 ticks
+    // Try step sizes: 1, 2, 5, 10, 20, 25, 50, 100
+    const steps = [1, 2, 5, 10, 20, 25, 50, 100]
+    let step = 1
+    
+    for (const s of steps) {
+        if (range / s <= 9) {
+            step = s
+            break
+        }
+    }
+    
+    const ticks = []
+    let current = Math.ceil(min / step) * step
+    while (current <= max) {
+        ticks.push(current)
+        current += step
+    }
+    
+    return ticks
+})
+
 const xAccessor = (d) => d.x
 const yAccessor = (d) => d.y
-
-const xTickFormat = (x) => {
-    if (isXNumeric.value) return x.toString()
-    const match = scaleData.value.find(d => Math.abs(d.x - x) < 0.1)
-    return match ? match.intl : ''
-}
 </script>
 
 <template>
-  <div v-if="scaleData.length > 0" class="w-full aspect-4/3 sm:aspect-video min-h-[250px]">
-     <!-- Unovis Chart with Theme Colors -->
-     <VisXYContainer 
-        :data="scaleData" 
-        :margin="{ top: 20, right: 20, bottom: 40, left: 50 }"
-        class="w-full h-full font-sans"
+  <div class="h-full w-full">
+     <VisXYContainer
+       :data="scaleData"
+       :margin="{ top: 20, right: 30, bottom: 50, left: 60 }"
+       :yDomain="[1.0, 4.0]"
+       class="w-full h-full font-sans font-medium"
      >
-        <VisLine 
-            :x="xAccessor" 
-            :y="yAccessor" 
-            color="var(--primary)" 
-            :strokeWidth="3"
-        />
-        <VisScatter 
-            :x="xAccessor" 
-            :y="yAccessor" 
-            :size="6" 
-            color="var(--background)" 
-            stroke-color="var(--primary)" 
-            :stroke-width="2" 
-        />
-        <VisAxis 
-            type="x" 
-            label="Original Grade" 
-            :tickFormat="xTickFormat"
-            :gridLine="false"
-            tick-text-color="var(--muted-foreground)"
-            domain-line-color="var(--border)"
-        />
-        <VisAxis 
-            type="y" 
-            label="US GPA" 
-            :tickValues="[0, 1, 2, 3, 4]" 
-            :gridLine="true"
-            grid-line-color="var(--border)"
-            tick-text-color="var(--muted-foreground)"
-            domain-line-color="var(--border)"
-        />
-        <VisCrosshair color="var(--muted-foreground)" />
-        <VisTooltip />
+       <VisLine
+         :x="xAccessor"
+         :y="yAccessor"
+         color="var(--primary)"
+         :strokeWidth="3"
+       />
+       <VisScatter
+         :x="xAccessor"
+         :y="yAccessor"
+         :size="8"
+         color="var(--background)"
+         stroke-color="var(--primary)"
+         :stroke-width="2"
+       />
+       <VisAxis
+         type="x"
+         label="Original Grade"
+         :gridLine="true"
+         :domainLine="false"
+         :tickValues="xTickValues"
+         tick-text-color="var(--muted-foreground)"
+         grid-line-color="var(--border)"
+         domain-line-color="var(--border)"
+       />
+       <VisAxis 
+         type="y" 
+         label="US GPA" 
+         :domainLine="false" 
+         :gridLine="true"
+         :tickValues="[1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0]"
+         :tickFormat="(y) => y.toFixed(1)"
+         tick-text-color="var(--muted-foreground)"
+         grid-line-color="var(--border)"
+         domain-line-color="var(--border)"
+       />
+       <VisCrosshair color="var(--primary)" :strokeWidth="1" template="<div style='background: var(--card); border: 1px solid var(--border); color: var(--card-foreground); padding: 4px 8px; border-radius: 4px; font-size: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);'>{{x}}: {{y}}</div>" /> 
      </VisXYContainer>
   </div>
 </template>
