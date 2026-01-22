@@ -506,6 +506,40 @@
     "notes": ""
   },
   {
+    "id": "483",
+    "schoolCode": "",
+    "schoolName": "Ontario 10-point",
+    "location": "Ontario",
+    "country": "Canada",
+    "intlScale": [
+      "10",
+      "9",
+      "8",
+      "7",
+      "6",
+      "5",
+      "4",
+      "3",
+      "2",
+      "1",
+      "0"
+    ],
+    "usScale": [
+      "4.0",
+      "4.0",
+      "3.7",
+      "3.3",
+      "3.0",
+      "2.3",
+      "2.0",
+      "1.3",
+      "1.0",
+      "0.0",
+      "0.0"
+    ],
+    "notes": "A+=10, A=9, A-=8, B+=7, B=6, C+=5, C=4, D+=3, D=2, E=1, F=0"
+  },
+  {
     "id": "13",
     "schoolCode": "9802701",
     "schoolName": "DEFAULT Chile",
@@ -3600,6 +3634,58 @@
       "2.0"
     ],
     "notes": "16-20=A+, 14-15=A, 12-13=B, 10-11=C"
+  },
+  {
+    "id": "373",
+    "schoolCode": "",
+    "schoolName": "DEFAULT Georgia - 7-Point Scale",
+    "location": "",
+    "country": "Georgia",
+    "intlScale": [
+      "7",
+      "6",
+      "5",
+      "4",
+      "3",
+      "2",
+      "1"
+    ],
+    "usScale": [
+      "4.0",
+      "3.3",
+      "3.0",
+      "2.0",
+      "1.7",
+      "1.0",
+      "0.0"
+    ],
+    "notes": "7=Excellent, 6=Very Good, 5=Good, 4=Satisfactory, 3=Sufficient, 2=Conditional pass, 1=Unsatisfactory"
+  },
+  {
+    "id": "374",
+    "schoolCode": "",
+    "schoolName": "DEFAULT Georgia - 10-point scale",
+    "location": "",
+    "country": "Georgia",
+    "intlScale": [
+      "10",
+      "9",
+      "8",
+      "7",
+      "6",
+      "5",
+      "4"
+    ],
+    "usScale": [
+      "4.0",
+      "4.0",
+      "3.3",
+      "3.0",
+      "2.3",
+      "2.0",
+      "0.0"
+    ],
+    "notes": "10=Outstanding, 9=Excellent, 8=Very Good, 7=Good, 6=Very Satisfactory, 5=Satisfactory, 4=Unsatisfactory"
   },
   {
     "id": "416",
@@ -7781,6 +7867,58 @@
       "2.0"
     ],
     "notes": ""
+  },
+  {
+    "id": "484",
+    "schoolCode": "",
+    "schoolName": "DEFAULT Israel - 10-point scale",
+    "location": "",
+    "country": "Israel",
+    "intlScale": [
+      "10",
+      "9",
+      "8",
+      "7",
+      "6",
+      "5",
+      "0"
+    ],
+    "usScale": [
+      "4.0",
+      "4.0",
+      "3.0",
+      "2.5",
+      "2.0",
+      "1.0",
+      "0.0"
+    ],
+    "notes": "9-10 = 4.0; 8-8.99 = 3.0; 7-7.99 = 2.5; 6-6.99 = 2.0; 5-5.99 = 1.0; 0-4.99 = 0.0"
+  },
+  {
+    "id": "372",
+    "schoolCode": "",
+    "schoolName": "DEFAULT Israel",
+    "location": "",
+    "country": "Israel",
+    "intlScale": [
+      "95",
+      "85",
+      "75",
+      "65",
+      "55",
+      "45",
+      "0"
+    ],
+    "usScale": [
+      "4.0",
+      "4.0",
+      "3.0",
+      "2.5",
+      "2.0",
+      "1.0",
+      "0.0"
+    ],
+    "notes": "95-100 = 4.0; 85-94.99 = 4.0; 75-84.99 = 3.0; 65-74.99 = 2.5; 55-64.99 = 2.0; 45-54.99 = 1.0; 0-44.99 = 0.0. For 10-point scale, see 'Israel - 10-point scale'"
   },
   {
     "id": "244",
